@@ -24,12 +24,9 @@
           buildInputs = [
             rust
             rust-analyzer
-            pkg-config
-            rocksdb
-            llvmPackages.clang
+            # pkg-config
           ];
-          LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
-          LIBCLANG_PATH="${llvmPackages.libclang.lib}/lib";
+          # LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
         };
       }
     );
