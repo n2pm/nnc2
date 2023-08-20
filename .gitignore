@@ -2,3 +2,4 @@
 /config.toml
 /.direnv
 /temp.db
+*.db

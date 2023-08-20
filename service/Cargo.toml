@@ -1,0 +1,16 @@
+[package]
+name = "nnc-service"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "nnc_service"
+path = "src/lib.rs"
+
+[dependencies]
+nanoid = "0.4.0"
+nnc-entity = { path = "../entity" }
+sea-orm = { version = "0.12.2", features = ["runtime-tokio-rustls", "sqlx-sqlite"] }
+tokio = { version = "1.32.0", features = ["rt", "macros"] }
+uuid = "1.4.1"

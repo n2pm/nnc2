@@ -24,6 +24,7 @@
           buildInputs = [
             rust
             rust-analyzer
+            sea-orm-cli
             # pkg-config
           ];
           # LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";

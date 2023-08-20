@@ -1,21 +1,20 @@
-mod account;
 mod user;
 
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::get,
+    routing::{get, post},
     Router,
 };
+use sea_orm::{DbConn, DbErr};
 use thiserror::Error;
 use tracing::error;
 
-use self::user::user;
-use crate::database::Db;
-
-pub fn make_router(db: Db) -> Router {
+pub fn make_router(db: DbConn) -> Router {
     Router::new()
-        .route("/users/:name", get(user))
+        .route("/users", get(user::list_users))
+        .route("/users", post(user::create_user))
+        .route("/users/:id", get(user::get_user_by_id))
         // .route("/users/:name/accounts", get(user_accounts))
         .with_state(db)
 }
@@ -24,6 +23,8 @@ pub fn make_router(db: Db) -> Router {
 pub enum AppError {
     #[error("Not found")]
     NotFound,
+    #[error(transparent)]
+    Database(#[from] DbErr),
     #[error(transparent)]
     Eyre(#[from] eyre::Error),
 }

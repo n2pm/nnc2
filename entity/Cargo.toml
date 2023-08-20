@@ -1,0 +1,13 @@
+[package]
+name = "nnc-entity"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "nnc_entity"
+path = "src/lib.rs"
+
+[dependencies]
+sea-orm = "0.12.2"
+serde = { version = "1.0.183", features = ["derive"] }
