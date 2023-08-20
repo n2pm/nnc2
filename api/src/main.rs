@@ -2,7 +2,7 @@ mod config;
 mod routing;
 mod tracing;
 
-use ::tracing::{info, debug};
+use ::tracing::{debug, info};
 use axum::Server;
 use eyre::Context;
 use nnc_migration::{Migrator, MigratorTrait};
@@ -20,22 +20,19 @@ async fn main() -> eyre::Result<()> {
         db_addr,
     } = Config::load().context("Failed to load config")?;
 
-    debug!("Connecting to database");
+    debug!("Connecting to {db_addr}");
     let db = Database::connect(db_addr)
         .await
-        .context("Failed to connect to database")?;
+        .context("Failed to connect to the database")?;
 
-    debug!("Migrating database");
+    debug!("Applying migrations");
     Migrator::up(&db, None)
         .await
-        .context("Failed to migrate database")?;
-
-    debug!("Creating router");
-    let app = make_router(db);
+        .context("Failed to apply migrations")?;
 
     info!("Starting service on {listen_addr}");
     Server::bind(&listen_addr)
-        .serve(app.into_make_service())
+        .serve(make_router(db).into_make_service())
         .await
         .context("Failed to serve app")?;
 
