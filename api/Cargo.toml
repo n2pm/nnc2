@@ -9,6 +9,7 @@ axum = { version = "0.6.19", default-features = false, features = ["headers", "h
 eyre = "0.6.8"
 figment = { version = "0.10.10", features = ["toml", "env"] }
 nnc-entity = { version = "0.1.0", path = "../entity" }
+nnc-migration = { version = "0.1.0", path = "../migration" }
 nnc-service = { version = "0.1.0", path = "../service" }
 sea-orm = { version = "0.12.2", features = ["runtime-tokio-rustls", "sqlx-sqlite", "macros"] }
 serde = { version = "1.0.171", features = ["derive"] }
