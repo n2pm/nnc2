@@ -11,7 +11,10 @@ impl Mutation {
         nanoid!(10) // this still provides 64^10 possible IDs
     }
 
-    pub async fn create_user(db: &DbConn, name: impl ToString) -> Result<user::Model, DbErr> {
+    pub async fn create_user<C: ConnectionTrait>(
+        db: &C,
+        name: impl ToString,
+    ) -> Result<user::Model, DbErr> {
         user::ActiveModel {
             id: Set(Self::generate_id()),
             name: Set(name.to_string()),
@@ -21,8 +24,8 @@ impl Mutation {
         .await
     }
 
-    pub async fn create_wallet(
-        db: &DbConn,
+    pub async fn create_wallet<C: ConnectionTrait>(
+        db: &C,
         name: impl ToString,
         owner_id: impl ToString,
     ) -> Result<wallet::Model, DbErr> {
@@ -36,12 +39,20 @@ impl Mutation {
         .await
     }
 
-    pub async fn create_user_with_default_wallet(
-        db: &DbConn,
+    pub async fn create_user_with_default_wallet<C: ConnectionTrait + TransactionTrait>(
+        db: &C,
         name: impl ToString,
-    ) -> Result<UserWithWallets, DbErr> {
-        let user = Self::create_user(db, name).await?;
-        let wallet = Self::create_wallet(db, "Default", &user.id).await?;
+    ) -> Result<UserWithWallets, TransactionError<DbErr>> {
+        let name = name.to_string();
+        let (user, wallet) = db
+            .transaction(|txn| {
+                Box::pin(async move {
+                    let user = Self::create_user(txn, name).await?;
+                    let wallet = Self::create_wallet(txn, "Default", &user.id).await?;
+                    Ok((user, wallet))
+                })
+            })
+            .await?;
         Ok(UserWithWallets {
             user,
             wallets: vec![wallet],

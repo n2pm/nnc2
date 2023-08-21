@@ -11,7 +11,7 @@ impl MigratorTrait for Migrator {
     }
 }
 
-fn create_index<'a, T, C>(table: T, col: C) -> IndexCreateStatement
+fn create_index<T, C>(table: T, col: C) -> IndexCreateStatement
 where
     T: IntoIden,
     C: IntoIden,
