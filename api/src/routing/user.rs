@@ -36,3 +36,8 @@ pub async fn get_user_by_id(
             .ok_or(AppError::NotFound)?,
     ))
 }
+
+pub async fn delete_user(Path(id): Path<String>, db: State<DbConn>) -> Result<(), AppError> {
+    Mutation::delete_user(&db.0, id).await?;
+    Ok(())
+}

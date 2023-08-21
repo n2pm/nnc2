@@ -4,7 +4,7 @@ mod wallet;
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::{get, post},
+    routing::{get, post, delete},
     Router,
 };
 use sea_orm::{DbConn, DbErr, TransactionError};
@@ -16,6 +16,7 @@ pub fn make_router(db: DbConn) -> Router {
         .route("/users", get(user::list_users))
         .route("/users", post(user::create_user))
         .route("/users/:id", get(user::get_user_by_id))
+        .route("/users/:id", delete(user::delete_user))
         .route("/wallets", get(wallet::list_wallets))
         .route("/wallets/:id", get(wallet::get_wallet_by_id))
         // .route("/users/:name/accounts", get(user_accounts))

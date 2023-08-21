@@ -2,6 +2,7 @@ use axum::{
     extract::{Path, State},
     Json,
 };
+use nnc_entity::wallet;
 use nnc_service::{compound::WalletWithOwner, Query};
 use sea_orm::DbConn;
 

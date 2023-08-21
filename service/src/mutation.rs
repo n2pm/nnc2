@@ -1,5 +1,8 @@
 use nanoid::nanoid;
-use nnc_entity::{user, wallet};
+use nnc_entity::{
+    user::{self, Entity as User},
+    wallet::{self, Entity as Wallet},
+};
 use sea_orm::*;
 
 use crate::compound::UserWithWallets;
@@ -39,6 +42,20 @@ impl Mutation {
         .await
     }
 
+    pub async fn create_default_wallet<C: ConnectionTrait>(
+        db: &C,
+        owner_id: impl ToString,
+    ) -> Result<wallet::Model, DbErr> {
+        wallet::ActiveModel {
+            id: Set(Self::generate_id()),
+            name: Set("Default".to_string()),
+            owner_id: Set(owner_id.to_string()),
+            ..Default::default()
+        }
+        .insert(db)
+        .await
+    }
+
     pub async fn create_user_with_default_wallet<C: ConnectionTrait + TransactionTrait>(
         db: &C,
         name: impl ToString,
@@ -48,7 +65,7 @@ impl Mutation {
             .transaction(|txn| {
                 Box::pin(async move {
                     let user = Self::create_user(txn, name).await?;
-                    let wallet = Self::create_wallet(txn, "Default", &user.id).await?;
+                    let wallet = Self::create_default_wallet(txn, &user.id).await?;
                     Ok((user, wallet))
                 })
             })
@@ -57,5 +74,23 @@ impl Mutation {
             user,
             wallets: vec![wallet],
         })
+    }
+
+    pub async fn delete_user<C: ConnectionTrait + TransactionTrait>(
+        db: &C,
+        id: impl ToString,
+    ) -> Result<(), TransactionError<DbErr>> {
+        let id = id.to_string();
+        db.transaction(|txn| {
+            Box::pin(async move {
+                Wallet::delete_many()
+                    .filter(wallet::Column::OwnerId.eq(&id))
+                    .exec(txn)
+                    .await?;
+                User::delete_by_id(&id).exec(txn).await?;
+                Ok(())
+            })
+        })
+        .await
     }
 }
