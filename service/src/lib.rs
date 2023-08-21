@@ -1,4 +1,4 @@
-mod id;
+pub mod compound;
 mod mutation;
 mod query;
 

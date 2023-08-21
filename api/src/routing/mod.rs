@@ -1,4 +1,5 @@
 mod user;
+mod wallet;
 
 use axum::{
     http::StatusCode,
@@ -15,6 +16,7 @@ pub fn make_router(db: DbConn) -> Router {
         .route("/users", get(user::list_users))
         .route("/users", post(user::create_user))
         .route("/users/:id", get(user::get_user_by_id))
+        .route("/wallets", get(wallet::list_wallets))
         // .route("/users/:name/accounts", get(user_accounts))
         .with_state(db)
 }

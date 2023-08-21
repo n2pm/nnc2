@@ -12,5 +12,5 @@ path = "src/lib.rs"
 nanoid = "0.4.0"
 nnc-entity = { path = "../entity" }
 sea-orm = { version = "0.12.2", features = ["runtime-tokio-rustls", "sqlx-sqlite"] }
+serde = { version = "1.0.185", features = ["derive"] }
 tokio = { version = "1.32.0", features = ["rt", "macros"] }
-uuid = "1.4.1"
