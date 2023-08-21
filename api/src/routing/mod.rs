@@ -4,7 +4,7 @@ mod wallet;
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::{get, post, delete},
+    routing::{delete, get, post},
     Router,
 };
 use sea_orm::{DbConn, DbErr, TransactionError};
